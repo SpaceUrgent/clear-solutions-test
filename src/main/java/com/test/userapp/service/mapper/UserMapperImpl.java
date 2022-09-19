@@ -2,6 +2,7 @@ package com.test.userapp.service.mapper;
 
 import com.test.userapp.dto.request.UserCreateRequestDto;
 import com.test.userapp.dto.request.UserPatchRequestDto;
+import com.test.userapp.dto.response.UserResponseDto;
 import com.test.userapp.entity.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -11,12 +12,7 @@ public class UserMapperImpl implements UserMapper {
     @Override
     public User fromDto(UserCreateRequestDto userDto) {
         User user = new User();
-        user.setEmail(userDto.getEmail());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setBirthDate(userDto.getBirthDate());
-        user.setAddress(userDto.getAddress());
-        user.setPhone(userDto.getPhone());
+        BeanUtils.copyProperties(userDto, user);
         return user;
     }
 
@@ -28,7 +24,9 @@ public class UserMapperImpl implements UserMapper {
     }
 
     @Override
-    public UserCreateRequestDto toDto(User user) {
-        return null;
+    public UserResponseDto toDto(User user) {
+        UserResponseDto userResponseDto = new UserResponseDto();
+        BeanUtils.copyProperties(user, userResponseDto);
+        return userResponseDto;
     }
 }

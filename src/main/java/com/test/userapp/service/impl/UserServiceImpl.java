@@ -6,7 +6,6 @@ import com.test.userapp.service.UserService;
 import com.test.userapp.utils.PropertyCopyHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,21 +25,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(Long id, User updatedUser) throws IllegalAccessException {
+    public User update(Long id, User updatedUser) {
         User userFromDb = userRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Can't find user with id" + id)
         );
-        PropertyCopyHelper.copyNonNullProperties(updatedUser, userFromDb);
+        try {
+            PropertyCopyHelper.copyNonNullProperties(updatedUser, userFromDb);
+        } catch (Exception e) {
+                throw new RuntimeException("Error occurred during updating properties ", e);
+        }
         return userRepository.save(userFromDb);
     }
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("Can't delete. No user with id " + id);
+        }
+        userRepository.deleteById(id);
+        return true;
     }
 
     @Override
     public List<User> searchByBirthDateRange(LocalDate from, LocalDate to) {
-        return null;
+        if (from.isAfter(to)) {
+            throw new RuntimeException("Wrong search date range: " + from + " can't be after " + to);
+        }
+        return userRepository.findAllByBirthDateBetween(from, to);
     }
 }
