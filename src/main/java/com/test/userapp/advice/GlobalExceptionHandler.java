@@ -1,5 +1,7 @@
-package com.test.userapp.exception.handler;
+package com.test.userapp.advice;
 
+import com.test.userapp.exception.DataProcessingException;
+import com.test.userapp.exception.InvalidDataRangeInputs;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,17 +22,16 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-
-    protected ResponseEntity<Object> handleConflict(Exception exception,
-                                                    HttpHeaders headers,
-                                                    HttpStatus status,
-                                                    WebRequest request) {
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {DataProcessingException.class, InvalidDataRangeInputs.class})
+    protected ResponseEntity<Object> handleException(Exception exception) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
-        body.put("description", status.toString());
-        body.put("detail", exception.getMessage());
-        return new ResponseEntity<>(body, headers, status);
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("description", HttpStatus.BAD_REQUEST.toString());
+        body.put("details", exception.getMessage());
+        return ResponseEntity.badRequest().body(body);
     }
 
     @ResponseBody

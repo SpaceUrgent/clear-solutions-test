@@ -5,6 +5,7 @@ import com.test.userapp.dto.request.UserPatchRequestDtoWrapper;
 import com.test.userapp.dto.response.UserResponseDto;
 import com.test.userapp.dto.response.UserResponseDtoWrapper;
 import com.test.userapp.entity.User;
+import com.test.userapp.exception.InvalidDataRangeInputs;
 import com.test.userapp.service.UserService;
 import com.test.userapp.service.mapper.UserMapper;
 import jakarta.validation.Valid;
@@ -46,7 +47,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id,
+    public ResponseEntity update(@PathVariable Long id,
                                        @RequestBody @Valid UserCreateRequestDtoWrapper userDtoWrapper)
             throws IllegalAccessException {
         User user = userService.update(id, userMapper.fromDto(userDtoWrapper.getData()));
@@ -54,7 +55,7 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Long id) {
+    public ResponseEntity delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.ok().build();
     }
@@ -62,6 +63,9 @@ public class UserController {
     @GetMapping
     public ResponseEntity<UserResponseDtoWrapper> findWithinBirthDateRange(@RequestParam("from") LocalDate from,
                                                                @RequestParam("to") LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new InvalidDataRangeInputs("Wrong search date range: " + from + " can't be after " + to);
+        }
         List<User> users = userService.searchByBirthDateRange(from, to);
         List<UserResponseDto> userResponseDtos = users.stream()
                 .map(user -> userMapper.toDto(user))

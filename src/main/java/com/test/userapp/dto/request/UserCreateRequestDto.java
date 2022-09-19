@@ -3,6 +3,7 @@ package com.test.userapp.dto.request;
 import com.test.userapp.lib.ValidBirthDate;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,5 +27,7 @@ public class UserCreateRequestDto {
     @ValidBirthDate
     private LocalDate birthDate;
     private String address;
+    @Pattern(regexp = "^(\\+\\d{1,3}( )?)?((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$",
+        message = "Invalid phone number format")
     private String phone;
 }
