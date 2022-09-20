@@ -93,14 +93,22 @@ public class UserController_Test {
     }
 
     @Test
-    public void register_returnsCreatedWithLocationHeader() throws Exception {
+    public void register_returnsCreatedWithLocationHeaderAndJson() throws Exception {
         Mockito.when(this.userMapper.fromDto(any(UserCreateRequestDto.class))).thenReturn(getUser());
         Mockito.when(userService.save(any(User.class))).thenReturn(getUserWithId());
+        Mockito.when(this.userMapper.toDto(any())).thenReturn(getUserResponse());
 
         MvcResult mvcResult = this.mvc.perform(post("/users/register")
                         .content(asJsonString(getCreateRequest()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data[0].email", is("email@domain.com")))
+                .andExpect(jsonPath("$.data[0].firstName", is("Bob")))
+                .andExpect(jsonPath("$.data[0].lastName", is("Surname")))
+                .andExpect(jsonPath("$.data[0].birthDate", is("2000-11-10")))
+                .andExpect(jsonPath("$.data[0].address", is("some address")))
+                .andExpect(jsonPath("$.data[0].phone", is("+380631231212")))
                 .andReturn();
         String header = mvcResult.getResponse().getHeader("Location");
         assertEquals("/users/1", header);
@@ -129,6 +137,7 @@ public class UserController_Test {
             throws Exception {
         Mockito.when(this.userMapper.fromDto(any(UserCreateRequestDto.class))).thenReturn(getUser());
         Mockito.when(userService.update(anyLong(), any(User.class))).thenReturn(getUserWithId());
+        Mockito.when(this.userMapper.toDto(any())).thenReturn(getUserResponse());
 
         UserPatchRequestDto userPatchRequestDto = new UserPatchRequestDto();
         userPatchRequestDto.setEmail("email@domain.con");
@@ -137,7 +146,15 @@ public class UserController_Test {
         this.mvc.perform(patch("/users/1")
                 .content(asJsonString(userPatchRequestDtoWrapper))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data[0].id", is(1)))
+                .andExpect(jsonPath("$.data[0].email", is("email@domain.com")))
+                .andExpect(jsonPath("$.data[0].firstName", is("Bob")))
+                .andExpect(jsonPath("$.data[0].lastName", is("Surname")))
+                .andExpect(jsonPath("$.data[0].birthDate", is("2000-11-10")))
+                .andExpect(jsonPath("$.data[0].address", is("some address")))
+                .andExpect(jsonPath("$.data[0].phone", is("+380631231212")));
     }
 
     @Test
@@ -159,14 +176,23 @@ public class UserController_Test {
 
     @Test
     public void update_returnsOk() throws Exception {
-        Mockito.when(userMapper.fromDto(any(UserCreateRequestDto.class))).thenReturn(getUser());
+        Mockito.when(this.userMapper.fromDto(any(UserCreateRequestDto.class))).thenReturn(getUser());
         Mockito.when(userService.update(anyLong(), any(User.class))).thenReturn(getUserWithId());
+        Mockito.when(this.userMapper.toDto(any())).thenReturn(getUserResponse());
 
         UserCreateRequestDtoWrapper updateRequest = getCreateRequest();
-        this.mvc.perform(patch("/users/1")
+        this.mvc.perform(put("/users/1")
                         .content(asJsonString(updateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data[0].id", is(1)))
+                .andExpect(jsonPath("$.data[0].email", is("email@domain.com")))
+                .andExpect(jsonPath("$.data[0].firstName", is("Bob")))
+                .andExpect(jsonPath("$.data[0].lastName", is("Surname")))
+                .andExpect(jsonPath("$.data[0].birthDate", is("2000-11-10")))
+                .andExpect(jsonPath("$.data[0].address", is("some address")))
+                .andExpect(jsonPath("$.data[0].phone", is("+380631231212")));
     }
 
     @Test
@@ -209,8 +235,9 @@ public class UserController_Test {
     }
     private User getUser() {
         User user = new User();
+        user.setEmail("email@domain.com");
         user.setFirstName("Bob");
-        user.setFirstName("Surname");
+        user.setLastName("Surname");
         user.setBirthDate(LocalDate.of(2000, 11, 10));
         user.setAddress("some address");
         user.setPhone("+380631231212");
@@ -223,9 +250,21 @@ public class UserController_Test {
         return user;
     }
 
+    private UserResponseDto getUserResponse() {
+        UserResponseDto userResponseDto = new UserResponseDto(
+                1L,
+                "email@domain.com",
+                "Bob",
+                "Surname",
+            LocalDate.of(2000, 11, 10),
+            "some address",
+            "+380631231212");
+        return userResponseDto;
+    }
+
     private UserCreateRequestDtoWrapper getCreateRequest() {
         UserCreateRequestDto userCreateRequestDto = new UserCreateRequestDto(
-                "user@domain.com",
+                "email@domain.com",
                 "Bob",
                 "Surname",
                 LocalDate.of(2000, 11, 10),

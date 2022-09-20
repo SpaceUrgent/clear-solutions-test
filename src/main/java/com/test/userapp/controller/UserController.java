@@ -31,27 +31,27 @@ public class UserController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity register(@RequestBody @Valid UserCreateRequestDtoWrapper userDtoWrapper)
+    public ResponseEntity<UserResponseDtoWrapper> register(@RequestBody @Valid UserCreateRequestDtoWrapper userDtoWrapper)
             throws URISyntaxException {
         User user = userService.save(userMapper.fromDto(userDtoWrapper.getData()));
         return ResponseEntity.created(new URI("/users/" + user.getId()))
-                .build();
+                .body(new UserResponseDtoWrapper(List.of(userMapper.toDto(user))));
     }
 
     @PatchMapping(path = "/{id}")
-    public ResponseEntity patch(@PathVariable Long id,
+    public ResponseEntity<UserResponseDtoWrapper> patch(@PathVariable Long id,
                                        @RequestBody @Valid UserPatchRequestDtoWrapper userDtoWrapper)
             throws IllegalAccessException {
-        userService.update(id, userMapper.fromDto(userDtoWrapper.getData()));
-        return ResponseEntity.ok().build();
+        User user = userService.update(id, userMapper.fromDto(userDtoWrapper.getData()));
+        return ResponseEntity.ok().body(new UserResponseDtoWrapper(List.of(userMapper.toDto(user))));
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity update(@PathVariable Long id,
+    public ResponseEntity<UserResponseDtoWrapper> update(@PathVariable Long id,
                                        @RequestBody @Valid UserCreateRequestDtoWrapper userDtoWrapper)
             throws IllegalAccessException {
         User user = userService.update(id, userMapper.fromDto(userDtoWrapper.getData()));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(new UserResponseDtoWrapper(List.of(userMapper.toDto(user))));
     }
 
     @DeleteMapping(path = "/{id}")
