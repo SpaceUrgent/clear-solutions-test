@@ -19,9 +19,11 @@ public class UserCreateRequestDto {
     private String email;
     @NotNull
     @Size(min = 1, max = 30)
+    @Pattern(regexp = "[A-Z][a-z]*")
     private String firstName;
     @NotNull
     @Size(min = 1, max = 30)
+    @Pattern(regexp = "[A-Z]+([ '-][a-zA-Z]+)*")
     private String lastName;
     @NotNull
     @ValidBirthDate
