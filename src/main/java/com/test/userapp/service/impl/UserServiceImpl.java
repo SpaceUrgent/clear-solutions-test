@@ -1,15 +1,14 @@
 package com.test.userapp.service.impl;
 
+import java.time.LocalDate;
+import java.util.List;
 import com.test.userapp.entity.User;
+import com.test.userapp.exception.DataProcessingException;
 import com.test.userapp.repository.UserRepository;
 import com.test.userapp.service.UserService;
 import com.test.userapp.utils.PropertyCopyHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,9 +25,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(Long id, User updatedUser) throws IllegalAccessException {
+    public User update(Long id, User updatedUser) {
         User userFromDb = userRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Can't find user with id" + id)
+                () -> new DataProcessingException("Can't find user with id " + id)
         );
         PropertyCopyHelper.copyNonNullProperties(updatedUser, userFromDb);
         return userRepository.save(userFromDb);
@@ -36,11 +35,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        if (!userRepository.existsById(id)) {
+            throw new DataProcessingException("Can't delete. No user with id " + id);
+        }
+        userRepository.deleteById(id);
+        return true;
     }
 
     @Override
     public List<User> searchByBirthDateRange(LocalDate from, LocalDate to) {
-        return null;
+        return userRepository.findAllByBirthDateBetween(from, to);
     }
 }

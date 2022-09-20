@@ -6,9 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserCreateRequestDtoWrapper {
+@NoArgsConstructor
+public class UserPatchRequestDtoWrapper {
     @Valid
-    private UserCreateRequestDto data;
+    private UserPatchRequestDto data;
 }

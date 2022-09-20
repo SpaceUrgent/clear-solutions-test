@@ -6,19 +6,17 @@ import java.util.Collections;
 import java.util.List;
 
 public class PropertyCopyHelper {
-
-    public static <T> void copyNonNullProperties(T from, T to) throws IllegalAccessException {
-        if (!from.getClass().equals(to.getClass())) {
-            throw new IllegalArgumentException("Can't copy properties for objects "
-                    + "with different classes: from " + from.getClass()
-                    + " to " + to.getClass());
-        }
+    public static <T> void copyNonNullProperties(T from, T to) {
         final List<Field> fields = getAllClassFields(from.getClass());
         for (Field field : fields) {
             field.setAccessible(true);
-            final Object fieldValue = field.get(from);
-            if (fieldValue != null) {
-                field.set(to, fieldValue);
+            try {
+                final Object fieldValue = field.get(from);
+                if (fieldValue != null) {
+                    field.set(to, fieldValue);
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e.getMessage());
             }
         }
     }
