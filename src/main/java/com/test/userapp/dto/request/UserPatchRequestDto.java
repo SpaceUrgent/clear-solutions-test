@@ -18,8 +18,10 @@ public class UserPatchRequestDto {
     @Email
     private String email;
     @Size(min = 1, max = 30)
+    @Pattern(regexp = "[A-Z][a-z]*")
     private String firstName;
     @Size(min = 1, max = 30)
+    @Pattern(regexp = "[A-Z][a-z]*")
     private String lastName;
     @ValidBirthDate
     private LocalDate birthDate;

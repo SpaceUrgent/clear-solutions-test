@@ -23,7 +23,7 @@ public class UserCreateRequestDto {
     private String firstName;
     @NotNull
     @Size(min = 1, max = 30)
-    @Pattern(regexp = "[A-Z]+([ '-][a-zA-Z]+)*")
+    @Pattern(regexp = "[A-Z][a-z]*")
     private String lastName;
     @NotNull
     @ValidBirthDate
