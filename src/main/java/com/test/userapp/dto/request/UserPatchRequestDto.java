@@ -2,14 +2,13 @@ package com.test.userapp.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.test.userapp.lib.ValidBirthDate;
+import java.time.LocalDate;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Data
 @JsonIgnoreProperties

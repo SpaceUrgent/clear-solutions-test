@@ -1,17 +1,14 @@
 package com.test.userapp.service.impl;
 
+import java.time.LocalDate;
+import java.util.List;
 import com.test.userapp.entity.User;
 import com.test.userapp.exception.DataProcessingException;
-import com.test.userapp.exception.InvalidDataRangeInputs;
 import com.test.userapp.repository.UserRepository;
 import com.test.userapp.service.UserService;
 import com.test.userapp.utils.PropertyCopyHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
